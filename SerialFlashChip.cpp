@@ -460,6 +460,27 @@ uint32_t SerialFlashChip::capacity(const uint8_t *id)
 	if ((id[0]==0 && id[1]==0 && id[2]==0) || 
 		(id[0]==255 && id[1]==255 && id[2]==255)) {
 		n = 0;
+	} else
+	if (id[0] == 0xbf) {
+		// SST25 & SST26
+		if (id[1] == 0x25) {
+			if (id[2] < 0x10) {
+				n = 1ul << ((id[2] & 0x07) + 15);	 
+			} else
+			if ((id[2] >= 0x10) && (id[2] < 0x80)) {
+				n = 1ul << ((id[2] & 0x07) + 20);	 
+			} else {
+				if (id[2] == 0x8b) n = 1048576;
+				if (id[2] == 0x8c) n = 262144;
+			} 
+		} else
+		if (id[1] == 0x26) {
+			if (id[2] <= 0x53) {
+				n = 1ul << ((id[2] & 0x07) + 20);	 
+			} else {
+				n = (1ul << 17) * (id[2] & 0x0f);	 
+			}	 
+		}	
 	}
 	//Serial.printf("capacity %lu\n", n);
 	return n;
@@ -486,7 +507,7 @@ S25FL127S			64
 N25Q512A	4		64
 N25Q00AA	4		64
 S25FL512S			256
-SST26VF032	4
+SST26VF032	4		64
 */
 
 
@@ -510,14 +531,23 @@ SST26VF032	4
 // Micron N25Q512A	64	?	20 BA 20	70	single		C4 x2
 // Micron N25Q00AA	128	64	20 BA 21		single		C4 x4
 // Micron MT25QL02GC	256	64	20 BA 22	70			C4 x2
-// SST SST25WF010	1/8	?	BF 25 02
-// SST SST25WF020	1/4	?	BF 25 03
-// SST SST25WF040	1/2	?	BF 25 04
-// SST SST25VF016B	1	?	BF 25 41
-// SST26VF016			?	BF 26 01
-// SST26VF032			?	BF 26 02
+// SST25WF512		1/16	?	BF 25 01
+// SST25WF010		1/8	?	BF 25 02
+// SST25WF020		1/4	?	BF 25 03
+// SST25VF020		1/4	?	BF 25 8C
+// SST25WF040		1/2	?	BF 25 04
+// SST26WF040		1/2	?	BF 26 54
+// SST25WF080		1	?	BF 25 05
+// SST25VF080		1	?	BF 25 8B
+// SST26WF080		1	?	BF 26 58
+// SST25VF016		2	?	BF 25 41
+// SST26VF016		2	64	BF 26 01
+// SST26WF016		2	?	BF 26 51
+// SST26VF032		4	64	BF 26 02
 // SST25VF032		4	64	BF 25 4A
-// SST26VF064		8	?	BF 26 43
+// SST26VF064		8	64	BF 26 43
+// SST25VF064		8	?	BF 25 4B
+// SST26WF064		8	?	BF 26 53
 // LE25U40CMC		1/2	64	62 06 13
 
 SerialFlashChip SerialFlash;

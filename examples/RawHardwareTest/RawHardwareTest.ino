@@ -425,17 +425,29 @@ const char * id2chip(const unsigned char *id)
 	}
 	if (id[0] == 0xBF) {
 		// SST
+    // Comment/uncomment according to available memory.
+    // (With all uncommented Arduino Micro's dynamic memory is too small.)
 		if (id[1] == 0x25) {
+			if (id[2] == 0x01) return "SST25WF512";
 			if (id[2] == 0x02) return "SST25WF010";
 			if (id[2] == 0x03) return "SST25WF020";
 			if (id[2] == 0x04) return "SST25WF040";
-			if (id[2] == 0x41) return "SST25VF016B";
+			if (id[2] == 0x05) return "SST25WF080";
+			if (id[2] == 0x41) return "SST25VF016";
 			if (id[2] == 0x4A) return "SST25VF032";
+			if (id[2] == 0x4B) return "SST25VF064";
+			//if (id[2] == 0x8B) return "SST25VF080";
+			//if (id[2] == 0x8C) return "SST25VF020";
 		}
-		if (id[1] == 0x25) {
+		if (id[1] == 0x26) {
 			if (id[2] == 0x01) return "SST26VF016";
 			if (id[2] == 0x02) return "SST26VF032";
+			if (id[2] == 0x22) return "SST26WF032";
 			if (id[2] == 0x43) return "SST26VF064";
+			//if (id[2] == 0x51) return "SST26WF016";
+			//if (id[2] == 0x53) return "SST26WF064";
+			//if (id[2] == 0x54) return "SST26WF040";
+			//if (id[2] == 0x58) return "SST26WF080";
 		}
 	}
 	return "(unknown chip)";
@@ -498,4 +510,3 @@ void printbuf(const void *buf, uint32_t len)
   } while (--len > 0);
   Serial.println();
 }
-
